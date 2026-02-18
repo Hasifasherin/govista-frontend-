@@ -28,19 +28,17 @@ const ToursPage = () => {
         if (category) params.append("category", category);
         if (date) params.append("date", date);
 
+        if (!process.env.NEXT_PUBLIC_API_URL) throw new Error("API URL is undefined");
+
         const response = await fetch(
           `${process.env.NEXT_PUBLIC_API_URL}/tours/search?${params.toString()}`,
           {
             method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
+            headers: { "Content-Type": "application/json" },
           }
         );
 
-        if (!response.ok) {
-          throw new Error(`Search failed with status ${response.status}`);
-        }
+        if (!response.ok) throw new Error(`Search failed with status ${response.status}`);
 
         const data = await response.json();
 
@@ -61,21 +59,15 @@ const ToursPage = () => {
     fetchTours();
   }, [location, category, date]);
 
-  const handleNavigate = (id: string) => {
-     router.push(`/user/tours/${id}`);
-  };
+  const handleNavigate = (id: string) => router.push(`/user/tours/${id}`);
 
   return (
     <div className="max-w-6xl mx-auto py-10 px-4">
       <h1 className="text-2xl font-bold mb-6">Available Tours</h1>
 
       {loading && <p className="text-gray-500">Loading tours...</p>}
-
       {error && <p className="text-red-500">{error}</p>}
-
-      {!loading && !error && tours.length === 0 && (
-        <p className="text-gray-500">No tours found.</p>
-      )}
+      {!loading && !error && tours.length === 0 && <p className="text-gray-500">No tours found.</p>}
 
       <div className="grid md:grid-cols-3 gap-6">
         {tours.map((tour) => (

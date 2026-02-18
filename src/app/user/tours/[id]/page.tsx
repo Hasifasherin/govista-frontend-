@@ -6,14 +6,14 @@ import { tourAPI } from "../../../../services/tour";
 import { Tour } from "../../../../types/tour";
 import { FiMapPin, FiCalendar, FiUsers, FiMessageCircle } from "react-icons/fi";
 
-// ✅ Import the review components
-import ReviewSection from "../../../components/review/ReviewSection";
+// ✅ Dynamic import to prevent SSR errors
+import dynamic from "next/dynamic";
+const ReviewSection = dynamic(() => import("../../../components/review/ReviewSection"), { ssr: false });
 
 export default function TourDetailPage() {
   const { id } = useParams();
   const router = useRouter();
 
-  // Ensure tourId is always a string
   const tourId = Array.isArray(id) ? id[0] : id;
 
   const [tour, setTour] = useState<Tour | null>(null);
@@ -23,7 +23,6 @@ export default function TourDetailPage() {
   const [people, setPeople] = useState(1);
   const [selectedDate, setSelectedDate] = useState("");
 
-  // Availability state
   const [availability, setAvailability] = useState<{ available: boolean; availableSlots: number } | null>(null);
   const [checkingAvailability, setCheckingAvailability] = useState(false);
 
@@ -63,15 +62,11 @@ export default function TourDetailPage() {
     checkAvailability();
   }, [selectedDate, tourId]);
 
-  // Navigate to chat with operator
   const handleMessage = () => {
     if (!tour?.createdBy?._id) return;
-
-    // Use query param to match UserChatPage
     router.push(`/user/chat?operatorId=${tour.createdBy._id}`);
   };
 
-  // Navigate to Booking Page
   const handleBooking = () => {
     if (!selectedDate) {
       setDateError("Please select a date");
@@ -83,7 +78,6 @@ export default function TourDetailPage() {
       return;
     }
 
-    // Clear error before navigating
     setDateError("");
     router.push(`/user/bookings/create?tourId=${tour?._id}&date=${selectedDate}&people=${people}`);
   };
@@ -91,34 +85,26 @@ export default function TourDetailPage() {
   if (loading) return <p className="text-center mt-10">Loading...</p>;
   if (!tour) return <p className="text-center mt-10">Tour not found</p>;
 
-  const maxPeople = availability
-    ? Math.min(tour.maxGroupSize, availability.availableSlots)
-    : tour.maxGroupSize;
+  const maxPeople = availability ? Math.min(tour.maxGroupSize, availability.availableSlots) : tour.maxGroupSize;
 
   return (
     <div className="container mx-auto px-4 py-10">
-      {/* Top Image */}
       <div className="w-full h-[420px] rounded-2xl overflow-hidden mb-10">
         <img src={tour.image} alt={tour.title} className="w-full h-full object-cover" />
       </div>
 
-      {/* Layout */}
       <div className="grid lg:grid-cols-3 gap-10">
-        {/* LEFT — Tour Info */}
         <div className="lg:col-span-2">
           <h1 className="text-3xl font-bold mb-2">{tour.title}</h1>
-
           {tour.category?.name && (
             <span className="inline-block bg-green-100 text-green-700 text-xs px-3 py-1 rounded-full mb-3">
               {tour.category.name}
             </span>
           )}
-
           <div className="flex items-center gap-2 text-gray-600 mb-6">
             <FiMapPin /> {tour.location}
           </div>
 
-          {/* Operator Card */}
           <div className="border rounded-xl p-5 mb-8 bg-gray-50">
             <h3 className="font-semibold mb-1">Your tour operator</h3>
             <p className="text-sm text-gray-600 mb-3">
@@ -132,19 +118,16 @@ export default function TourDetailPage() {
             </button>
           </div>
 
-          {/* Overview */}
           <div className="mb-10">
             <h2 className="text-xl font-semibold mb-3">Overview</h2>
             <p className="text-gray-600 leading-relaxed">{tour.description}</p>
           </div>
 
-          {/* Itinerary */}
           <div className="mb-10">
             <h2 className="text-xl font-semibold mb-3">Tour Itinerary</h2>
             <div className="border rounded-xl p-4 text-gray-600">Detailed itinerary will be shown here.</div>
           </div>
 
-          {/* Inclusion / Exclusion */}
           <div className="mb-10 grid md:grid-cols-2 gap-6">
             <div>
               <h3 className="font-semibold mb-2">Inclusions</h3>
@@ -163,13 +146,11 @@ export default function TourDetailPage() {
             </div>
           </div>
 
-          {/* ✅ Reviews Section */}
           <div className="mb-10">
             <ReviewSection tourId={tour._id} />
           </div>
         </div>
 
-        {/* RIGHT — Booking */}
         <div>
           <div className="border rounded-2xl p-6 shadow-lg sticky top-24">
             <h2 className="text-2xl font-bold mb-4">
@@ -186,7 +167,6 @@ export default function TourDetailPage() {
               </div>
             </div>
 
-            {/* Party Size */}
             <div className="mb-4">
               <label className="text-sm font-medium">Party size</label>
               <input
@@ -200,7 +180,6 @@ export default function TourDetailPage() {
               {availability && <p className="text-xs text-gray-500 mt-1">{availability.availableSlots} slots left</p>}
             </div>
 
-            {/* Date */}
             <div className="mb-6">
               <label className="text-sm font-medium">Select tour date</label>
               <select
@@ -217,11 +196,7 @@ export default function TourDetailPage() {
               </select>
 
               {checkingAvailability && <p className="text-xs text-gray-500 mt-1">Checking availability...</p>}
-              {availability && !availability.available && (
-                <p className="text-xs text-red-500 mt-1">Fully booked on this date</p>
-              )}
-
-              {/* Error message if no date selected */}
+              {availability && !availability.available && <p className="text-xs text-red-500 mt-1">Fully booked on this date</p>}
               {dateError && <p className="text-xs text-red-500 mt-1">{dateError}</p>}
             </div>
 
