@@ -1,8 +1,12 @@
-import { Review, AdminReviewsResponse, OperatorReviewResponse } from "../types/review";
+// frontend/services/reviewService.ts
 import api from "../utils/api";
 import axios from "axios";
+import { Review, AdminReviewsResponse, OperatorReviewResponse } from "../types/review";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
+// -------------------- EXPORT TYPES --------------------
+export type { Review, AdminReviewsResponse, OperatorReviewResponse };
 
 // -------------------- ADMIN --------------------
 export const getAdminReviews = async (): Promise<AdminReviewsResponse> => {
