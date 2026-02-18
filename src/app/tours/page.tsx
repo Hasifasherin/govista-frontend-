@@ -28,27 +28,27 @@ const ToursPage = () => {
         if (category) params.append("category", category);
         if (date) params.append("date", date);
 
-        if (!process.env.NEXT_PUBLIC_API_URL) throw new Error("API URL is undefined");
+        // ✅ Ensure API URL is defined
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+        if (!apiUrl) throw new Error("NEXT_PUBLIC_API_URL is not set");
 
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/tours/search?${params.toString()}`,
-          {
-            method: "GET",
-            headers: { "Content-Type": "application/json" },
-          }
-        );
+        const response = await fetch(`${apiUrl}/tours/search?${params.toString()}`, {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+        });
 
         if (!response.ok) throw new Error(`Search failed with status ${response.status}`);
 
-        const data = await response.json();
+        const data = await response.json().catch(() => ({ tours: [] }));
 
+        // ✅ Safe check for tours array
         if (data?.success && Array.isArray(data.tours)) {
           setTours(data.tours);
         } else {
           setTours([]);
         }
       } catch (err: any) {
-        console.error("Failed to fetch tours:", err.message);
+        console.error("Failed to fetch tours:", err.message || err);
         setError("Something went wrong while loading tours.");
         setTours([]);
       } finally {
