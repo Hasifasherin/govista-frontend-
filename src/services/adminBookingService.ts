@@ -1,4 +1,3 @@
-// frontend/services/bookingService.ts
 import { apiRequest } from "../utils/api";
 import { AdminBooking, Booking } from "../types/booking";
 
@@ -24,19 +23,11 @@ export const getOperatorBookings = async (): Promise<Booking[]> => {
   return data.bookings;
 };
 
-// Get specific booking details
-export const getBookingById = async (bookingId: string): Promise<Booking> => {
-  const data = await apiRequest<{ booking: Booking }>(
-    "GET",
-    `/operator/bookings/${bookingId}`
-  );
-  return data.booking;
-};
 
-// Update booking status (Accept / Reject)
+// Update booking status (Accept / Reject / Cancel)
 export const updateBookingStatus = async (
   bookingId: string,
-  status: "accepted" | "rejected"
+  status: "pending" | "accepted" | "rejected" | "cancelled"
 ): Promise<Booking> => {
   const data = await apiRequest<{ booking: Booking }>(
     "PUT",
@@ -46,9 +37,18 @@ export const updateBookingStatus = async (
   return data.booking;
 };
 
+// Get specific booking details
+export const getBookingById = async (bookingId: string): Promise<Booking> => {
+  const data = await apiRequest<{ booking: Booking }>(
+    "GET",
+    `/operator/bookings/${bookingId}`
+  );
+  return data.booking;
+};
+
 // ================== PAYMENT ==================
 
-// Update payment status for a booking (operator/admin)
+// Update payment status for a booking
 export const updateBookingPaymentStatus = async (
   bookingId: string,
   paymentStatus: "unpaid" | "paid" | "refunded"
@@ -61,11 +61,11 @@ export const updateBookingPaymentStatus = async (
   return data.booking;
 };
 
-// Confirm payment for a booking (calls backend Express route)
+// Confirm payment for a booking (calls backend API route)
 export const confirmBookingPayment = async (bookingId: string): Promise<Booking> => {
   const data = await apiRequest<{ booking: Booking }>(
     "POST",
-    `/payments/confirm/${bookingId}` // ✅ backend route
+    `/api/payments/confirm/${bookingId}` // frontend API route
   );
   return data.booking;
 };
