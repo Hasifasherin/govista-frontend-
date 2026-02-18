@@ -1,0 +1,322 @@
+/* ================== DASHBOARD CONTAINER ================== */
+.dashboard {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* ================== STATS CARDS ================== */
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+  margin-bottom: 30px;
+}
+
+.statCard {
+  background: white;
+  border-radius: 12px;
+  padding: 16px 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e5e7eb;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.statCard:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  border-color: #0f8a2d;
+}
+
+.statCard::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: linear-gradient(to bottom, #0f8a2d, #1db954);
+}
+
+.statIcon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+  background: linear-gradient(135deg, #e9f7ef, #d1fae5);
+  font-size: 22px;
+}
+
+.statValue {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 2px;
+  line-height: 1;
+}
+
+.statLabel {
+  font-size: 12px;
+  color: #6b7280;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.statHighlight {
+  color: #d97706;
+  font-size: 11px;
+  margin-top: 4px;
+}
+
+/* ================== CHART CONTAINERS ================== */
+.chartsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.chartContainer {
+  padding: 12px 16px;
+  background: white;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+}
+
+.chartContainer h3 {
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+/* ================== RECENT BOOKINGS CONTAINER ================== */
+.recentBookingsContainer {
+  background: white;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+  margin-top: 30px;
+  overflow-x: auto;
+  transition: all 0.2s ease;
+}
+
+.recentBookingsContainer:hover {
+  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+}
+
+.recentBookingsHeader {
+  padding: 16px 20px;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.recentBookingsHeader h2 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.recentBookingsHeader a {
+  font-size: 12px;
+  font-weight: 500;
+  color: #0f8a2d;
+  text-decoration: none;
+}
+
+.recentBookingsHeader a:hover {
+  text-decoration: underline;
+}
+
+.recentBookingsEmpty {
+  padding: 60px 20px;
+  text-align: center;
+  color: #6b7280;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* Table Styling */
+.table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 12px;
+}
+
+.table th, .table td {
+  padding: 12px 8px;
+  text-align: left;
+  vertical-align: middle;
+}
+
+.table th {
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  background: #f9fafb;
+}
+
+.table tr {
+  transition: all 0.2s ease;
+}
+
+.table tr:hover {
+  background: #f3f4f6;
+  transform: scale(1.002);
+}
+
+/* ================== STATUS BADGES ================== */
+.statusBadge {
+  padding: 4px 10px;
+  border-radius: 16px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.statusPending { 
+  background: linear-gradient(to right, #fef3c7, #fde68a); 
+  color: #92400e;
+  border: 1px solid #fbbf24;
+}
+
+.statusAccepted { 
+  background: linear-gradient(to right, #d1fae5, #a7f3d0); 
+  color: #065f46;
+  border: 1px solid #10b981;
+}
+
+.statusRejected { 
+  background: linear-gradient(to right, #fee2e2, #fecaca); 
+  color: #991b1b;
+  border: 1px solid #ef4444;
+}
+
+/* ================== ACTION BUTTONS ================== */
+.actionButton {
+  padding: 6px 12px;
+  font-size: 12px;
+  border-radius: 6px;
+  font-weight: 600;
+}
+
+.actionAccept {
+  background: linear-gradient(to right, #0f8a2d, #1db954);
+  color: white;
+}
+
+.actionAccept:hover {
+  background: linear-gradient(to right, #0a6b22, #16a34a);
+  transform: translateY(-1px);
+}
+
+.actionReject {
+  background: #f3f4f6;
+  color: #6b7280;
+  border: 1px solid #e5e7eb;
+}
+
+.actionReject:hover {
+  background: #e5e5e5;
+}
+
+/* ================== RESPONSIVE ================== */
+@media (max-width: 768px) {
+  .table th, .table td {
+    padding: 10px 6px;
+  }
+}
+
+
+/* ================== STATUS BADGES ================== */
+.statusBadge {
+  padding: 4px 10px;
+  border-radius: 16px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.statusPending { 
+  background: linear-gradient(to right, #fef3c7, #fde68a); 
+  color: #92400e;
+  border: 1px solid #fbbf24;
+}
+
+.statusAccepted { 
+  background: linear-gradient(to right, #d1fae5, #a7f3d0); 
+  color: #065f46;
+  border: 1px solid #10b981;
+}
+
+.statusRejected { 
+  background: linear-gradient(to right, #fee2e2, #fecaca); 
+  color: #991b1b;
+  border: 1px solid #ef4444;
+}
+
+/* ================== ACTION BUTTONS ================== */
+.actionButton {
+  padding: 6px 12px;
+  font-size: 12px;
+  border-radius: 6px;
+  font-weight: 600;
+}
+
+.actionAccept {
+  background: linear-gradient(to right, #0f8a2d, #1db954);
+  color: white;
+}
+
+.actionAccept:hover {
+  background: linear-gradient(to right, #0a6b22, #16a34a);
+  transform: translateY(-1px);
+}
+
+.actionReject {
+  background: #f3f4f6;
+  color: #6b7280;
+  border: 1px solid #e5e7eb;
+}
+
+.actionReject:hover {
+  background: #e5e5e5;
+}
+
+/* ================== RESPONSIVE ================== */
+@media (max-width: 768px) {
+  .statsGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .chartsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .table th, .table td {
+    padding: 10px 6px;
+  }
+}
+
+@media (max-width: 480px) {
+  .statsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .chartsGrid {
+    grid-template-columns: 1fr;
+  }
+}

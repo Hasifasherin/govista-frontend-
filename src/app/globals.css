@@ -1,0 +1,77 @@
+/* app/globals.css - FIXED VERSION */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap');
+
+@import "tailwindcss";
+
+
+:root {
+  --green-primary: #0f8a2d;
+  --green-dark: #0a6b22;
+  --green-light: #e9f7ef;
+  --green-accent: #1db954;
+  --font-inter: 'Inter', sans-serif;
+  --font-poppins: 'Poppins', sans-serif;
+}
+
+body {
+  background-color: #ffffff;
+  color: #1f2937;
+  font-family: var(--font-inter);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.15s ease-out;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-poppins);
+}
+
+/* Custom styles for operator dashboard */
+.active-menu-item {
+  background-color: var(--green-primary);
+  color: white;
+  position: relative;
+}
+
+.active-menu-item::after {
+  content: '';
+  position: absolute;
+  right: -8px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 8px;
+  height: 24px;
+  background-color: var(--green-primary);
+  border-radius: 4px 0 0 4px;
+}
+
+/* Custom scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--green-primary);
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: var(--green-dark);
+}
