@@ -53,13 +53,13 @@ export default function CreateBookingPage() {
 
       const exists = res.bookings.find((b) => {
         const sameTour =
-  (b.tourId as any)?._id === tourId;
+          (b.tourId as any)?._id === tourId;
 
 
         const sameDate =
-  b.travelDate &&
-  new Date(b.travelDate).toDateString() ===
-    new Date(selectedDate).toDateString();
+          b.travelDate &&
+          new Date(b.travelDate).toDateString() ===
+          new Date(selectedDate).toDateString();
 
         const activeStatus = ["pending", "accepted"].includes(
           b.status
@@ -178,8 +178,8 @@ export default function CreateBookingPage() {
             <FiCalendar />
             {selectedDate
               ? new Date(
-                  selectedDate
-                ).toLocaleDateString()
+                selectedDate
+              ).toLocaleDateString()
               : "No date selected"}
           </span>
 
@@ -222,17 +222,16 @@ export default function CreateBookingPage() {
         <button
           onClick={handleBooking}
           disabled={bookingLoading || alreadyBooked}
-          className={`px-6 py-3 rounded-lg text-white transition ${
-            alreadyBooked
+          className={`px-6 py-3 rounded-lg text-white transition ${alreadyBooked
               ? "bg-gray-400 cursor-not-allowed"
               : "bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400"
-          }`}
+            }`}
         >
           {alreadyBooked
             ? "Already Booked"
             : bookingLoading
-            ? "Processing..."
-            : "Request Booking"}
+              ? "Processing..."
+              : "Request Booking"}
         </button>
       </div>
     </div>

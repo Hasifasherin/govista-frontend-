@@ -62,8 +62,8 @@ export default function BookingTable({ bookings }: Props) {
             const displayDate = b.travelDate
               ? new Date(b.travelDate).toLocaleDateString()
               : b.bookingDate
-              ? new Date(b.bookingDate).toLocaleDateString()
-              : "N/A";
+                ? new Date(b.bookingDate).toLocaleDateString()
+                : "N/A";
 
             return (
               <tr
@@ -75,7 +75,10 @@ export default function BookingTable({ bookings }: Props) {
                 </td>
 
                 <td className="px-6 py-4 text-gray-800">
-                  {b.tourId?.title || "N/A"}
+                  {typeof b.tourId === "string"
+                    ? "N/A"
+                    : b.tourId?.title || "N/A"}
+
                 </td>
 
                 <td className="px-6 py-4 text-gray-600">
