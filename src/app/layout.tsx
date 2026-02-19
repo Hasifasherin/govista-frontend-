@@ -8,6 +8,8 @@ import { Provider } from "react-redux";
 import { store } from "../redux/store";
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
+import { Toaster } from "react-hot-toast";
+
 import "./globals.css";
 
 const stripePromise = loadStripe(
@@ -21,7 +23,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     "/auth/login",
     "/auth/register",
     "/admin/login",
-    "/user/chat"
+    "/user/chat",
   ];
 
   const isAdminOrOperatorRoute =
@@ -36,6 +38,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Provider store={store}>
           <AuthProvider>
             <Elements stripe={stripePromise}>
+
+              {/* GLOBAL TOASTER HERE */}
+              <Toaster
+                position="top-right"
+                reverseOrder={false}
+                toastOptions={{
+                  duration: 2500,
+                }}
+              />
+
               {shouldShowHeader && <Header />}
 
               <div className={shouldShowHeader ? "pt-[80px]" : ""}>
@@ -43,6 +55,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               </div>
 
               {shouldShowHeader && <Footer />}
+
             </Elements>
           </AuthProvider>
         </Provider>

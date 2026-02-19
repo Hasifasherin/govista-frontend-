@@ -1,10 +1,11 @@
 // frontend/services/paymentService.ts
+
 import { apiRequest } from "../utils/api";
 import { Booking } from "../types/booking";
 
-// =========================
-// TYPES
-// =========================
+/* =========================
+   TYPES
+========================= */
 
 export interface PaymentIntentResponse {
   success: boolean;
@@ -18,99 +19,84 @@ export interface ConfirmPaymentResponse {
   booking: Booking;
 }
 
-// =========================
-// USER PAYMENT FUNCTIONS
-// =========================
+export interface RefundResponse {
+  success: boolean;
+  refund?: any;
+}
 
-// Create Payment Intent (Stripe)
+/* =========================
+   USER PAYMENT FUNCTIONS
+========================= */
+
+/**
+ * Create Stripe Payment Intent
+ */
 export const createPaymentIntent = async (
   bookingId: string
 ): Promise<PaymentIntentResponse> => {
-  try {
-    const response = await apiRequest<PaymentIntentResponse>(
-      "POST",
-      "/payments/create-intent",
-      { bookingId }
-    );
+  const data = await apiRequest<PaymentIntentResponse>(
+    "POST",
+    "/payments/create-intent",
+    { bookingId }
+  );
 
-    return response;
-  } catch (err: any) {
-    console.error("Error creating payment intent:", err);
-    throw new Error(
-      err.response?.data?.message || "Failed to create payment intent"
-    );
+  if (!data?.clientSecret) {
+    throw new Error("Failed to create payment intent");
   }
+
+  return data;
 };
 
-// Confirm Payment
+/**
+ * Confirm Payment After Stripe Success
+ */
 export const confirmPayment = async (
   bookingId: string
 ): Promise<ConfirmPaymentResponse> => {
-  try {
-    const response = await apiRequest<ConfirmPaymentResponse>(
-      "POST",
-      `/payments/confirm/${bookingId}`
-    );
-
-    return response;
-  } catch (err: any) {
-    console.error("Error confirming payment:", err);
-    throw new Error(
-      err.response?.data?.message || "Failed to confirm payment"
-    );
-  }
+  return await apiRequest<ConfirmPaymentResponse>(
+    "POST",
+    `/payments/confirm/${bookingId}`
+  );
 };
 
-// Check Payment Status
+/**
+ * Check Payment Status
+ */
 export const checkPaymentStatus = async (
   bookingId: string
 ): Promise<ConfirmPaymentResponse> => {
-  try {
-    const response = await apiRequest<ConfirmPaymentResponse>(
-      "GET",
-      `/payments/status/${bookingId}`
-    );
-
-    return response;
-  } catch (err: any) {
-    console.error("Error checking payment status:", err);
-    throw new Error(
-      err.response?.data?.message || "Failed to check payment status"
-    );
-  }
+  return await apiRequest<ConfirmPaymentResponse>(
+    "GET",
+    `/payments/status/${bookingId}`
+  );
 };
 
-// =========================
-// OPERATOR / ADMIN FUNCTIONS
-// =========================
+/* =========================
+   OPERATOR / ADMIN
+========================= */
 
+/**
+ * Get Operator Payments
+ */
 export const getOperatorPayments = async (): Promise<Booking[]> => {
-  try {
-    const data = await apiRequest<{ bookings: Booking[] }>(
-      "GET",
-      "/operator/bookings"
-    );
-    return data.bookings;
-  } catch (err: any) {
-    console.error("Error fetching operator payments:", err);
-    throw new Error(
-      err.response?.data?.message || "Failed to fetch operator payments"
-    );
-  }
+  const data = await apiRequest<{ bookings: Booking[] }>(
+    "GET",
+    "/bookings/operator"
+  );
+
+  return data?.bookings || [];
 };
 
+/**
+ * Refund Payment
+ */
 export const refundPayment = async (
   bookingId: string,
   reason?: string
-) => {
-  try {
-    const data = await apiRequest("POST", "/payments/refund", {
-      bookingId,
-      reason,
-    });
-    return data;
-  } catch (err: any) {
-    console.error("Error creating refund:", err);
-    throw new Error(err.response?.data?.message || "Failed to refund payment");
-  }
+): Promise<RefundResponse> => {
+  return await apiRequest<RefundResponse>(
+    "POST",
+    "/payments/refund",
+    { bookingId, reason }
+  );
 };

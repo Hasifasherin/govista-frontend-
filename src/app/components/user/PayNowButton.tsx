@@ -1,9 +1,9 @@
+// frontend/src/app/components/user/PayNowButton.tsx
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Booking } from "../../../types/booking";
-import { createPaymentIntent, confirmPayment } from "../../../services/paymentService";
-import { useStripe, useElements, CardElement } from "@stripe/react-stripe-js";
+import { confirmBookingPayment } from "../../../services/adminBookingService";
 
 interface PayNowButtonProps {
   booking: Booking;
@@ -11,62 +11,72 @@ interface PayNowButtonProps {
 }
 
 export default function PayNowButton({ booking, onPaymentSuccess }: PayNowButtonProps) {
-  const stripe = useStripe();
-  const elements = useElements();
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState<string | null>(null);
+  const [message, setMessage] = useState<{ type: "error" | "success"; text: string } | null>(null);
 
   const handlePayment = async () => {
-    if (!stripe || !elements) return;
+    // Guard checks
+    if (booking.status !== "accepted") {
+      setMessage({ type: "error", text: "Booking must be accepted before payment." });
+      return;
+    }
+
+    if (booking.paymentStatus === "paid") {
+      setMessage({ type: "success", text: "✅ Payment already completed." });
+      return;
+    }
 
     try {
       setLoading(true);
       setMessage(null);
 
-      // 1️⃣ Create Payment Intent
-      const { clientSecret } = await createPaymentIntent(booking._id);
+      // Backend API call to mark as paid
+      const updatedBooking = await confirmBookingPayment(booking._id);
 
-      // 2️⃣ Confirm Card Payment
-      const result = await stripe.confirmCardPayment(clientSecret, {
-        payment_method: {
-          card: elements.getElement(CardElement)!,
-        },
-      });
-
-      if (result.error) {
-        setMessage(result.error.message || "Payment failed");
-        return;
-      }
-
-      if (result.paymentIntent?.status === "succeeded") {
-        // 3️⃣ Confirm with backend
-        const response = await confirmPayment(booking._id);
-
-        if (response.booking?.paymentStatus === "paid") {
-          setMessage("🎉 Payment successful!");
-          onPaymentSuccess(response.booking);
-        }
+      if (updatedBooking.paymentStatus === "paid") {
+        setMessage({ type: "success", text: "✅ Payment successful!" });
+        onPaymentSuccess(updatedBooking);
+      } else {
+        setMessage({ type: "error", text: "Payment failed. Please try again." });
       }
     } catch (err: any) {
-      setMessage("Payment error occurred.");
+      console.error(err);
+      setMessage({
+        type: "error",
+        text: err.response?.data?.message || err.message || "Payment error occurred.",
+      });
     } finally {
       setLoading(false);
     }
   };
 
-  return (
-    <div className="space-y-4">
-      <CardElement className="p-3 border rounded-lg" />
+  // Auto-clear message after 5s
+  useEffect(() => {
+    if (message) {
+      const timer = setTimeout(() => setMessage(null), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [message]);
 
+  return (
+    <div className="space-y-2">
       <button
         onClick={handlePayment}
-        disabled={loading}
+        disabled={loading || booking.paymentStatus === "paid"}
         className="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 disabled:bg-gray-400"
       >
-        {loading ? "Processing..." : "Pay Now"}
+        {loading
+          ? "Processing..."
+          : booking.paymentStatus === "paid"
+          ? "Paid"
+          : "Pay Now"}
       </button>
 
-      {message && <p className="text-red-600">{message}</p>}
+      {message && (
+        <p className={message.type === "error" ? "text-red-600" : "text-green-600"}>
+          {message.text}
+        </p>
+      )}
     </div>
   );
 }

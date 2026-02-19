@@ -1,71 +1,69 @@
+// frontend/src/services/adminBookingService.ts
 import { apiRequest } from "../utils/api";
 import { AdminBooking, Booking } from "../types/booking";
 
-// ================== ADMIN BOOKINGS ==================
+/* ---------------- COMMON TYPES ---------------- */
+interface BookingsResponse<T> {
+  bookings: T[];
+}
 
-// Get all admin bookings for a specific month
+interface BookingResponse {
+  success: boolean;
+  message: string;
+  booking: Booking;
+}
+
+/* ---------------- ADMIN BOOKINGS ---------------- */
 export const getAdminBookings = async (month: string): Promise<AdminBooking[]> => {
-  const data = await apiRequest<{ bookings: AdminBooking[] }>(
+  const data = await apiRequest<BookingsResponse<AdminBooking>>(
     "GET",
-    `/admin/bookings?month=${month}`
+    "/admin/bookings",
+    { month }
   );
-  return data.bookings;
+  return data.bookings || [];
 };
 
-// ================== OPERATOR BOOKINGS ==================
-
-// Get operator bookings
+/* ---------------- OPERATOR BOOKINGS ---------------- */
 export const getOperatorBookings = async (): Promise<Booking[]> => {
-  const data = await apiRequest<{ bookings: Booking[] }>(
+  const data = await apiRequest<BookingsResponse<Booking>>(
     "GET",
-    "/operator/bookings"
+    "/bookings/operator"
   );
-  return data.bookings;
+  return data.bookings || [];
 };
 
-
-// Update booking status (Accept / Reject / Cancel)
+/* ---------------- UPDATE BOOKING STATUS ---------------- */
 export const updateBookingStatus = async (
   bookingId: string,
-  status: "pending" | "accepted" | "rejected" | "cancelled"
+  status: "accepted" | "rejected"
 ): Promise<Booking> => {
-  const data = await apiRequest<{ booking: Booking }>(
+  const data = await apiRequest<BookingResponse>(
     "PUT",
-    `/operator/bookings/${bookingId}/status`,
+    `/bookings/${bookingId}/status`,
     { status }
   );
   return data.booking;
 };
 
-// Get specific booking details
+/* ---------------- GET BOOKING BY ID ---------------- */
 export const getBookingById = async (bookingId: string): Promise<Booking> => {
-  const data = await apiRequest<{ booking: Booking }>(
+  const data = await apiRequest<BookingResponse>(
     "GET",
-    `/operator/bookings/${bookingId}`
+    `/bookings/${bookingId}`
   );
   return data.booking;
 };
 
-// ================== PAYMENT ==================
-
-// Update payment status for a booking
-export const updateBookingPaymentStatus = async (
-  bookingId: string,
-  paymentStatus: "unpaid" | "paid" | "refunded"
-): Promise<Booking> => {
-  const data = await apiRequest<{ booking: Booking }>(
-    "PUT",
-    `/operator/bookings/${bookingId}/payment-status`,
-    { paymentStatus }
-  );
-  return data.booking;
-};
-
-// Confirm payment for a booking (calls backend API route)
+/* ---------------- CONFIRM PAYMENT (ONE-CLICK) ---------------- */
 export const confirmBookingPayment = async (bookingId: string): Promise<Booking> => {
-  const data = await apiRequest<{ booking: Booking }>(
-    "POST",
-    `/api/payments/confirm/${bookingId}` // frontend API route
+  const data = await apiRequest<BookingResponse>(
+    "PUT", // Must be PUT to match backend
+    `/bookings/${bookingId}/confirm-payment`
   );
+
+  if (!data.success) {
+    throw new Error(data.message || "Payment failed");
+  }
+
   return data.booking;
 };

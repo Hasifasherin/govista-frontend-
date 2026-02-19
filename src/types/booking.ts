@@ -6,9 +6,12 @@ export interface AdminBooking {
   status: "pending" | "accepted" | "rejected" | "cancelled" | "completed";
   paymentStatus: "unpaid" | "paid" | "refunded";
 
-  tourId: {
-    title: string;
-  };
+  tourId:
+  | string  
+  | {
+      _id: string;  
+      title: string;
+    };
 
   operatorId: {
     firstName: string;

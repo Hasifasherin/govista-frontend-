@@ -9,14 +9,15 @@ import {
   FiHeart,
 } from "react-icons/fi";
 import { Tour } from "../../../types/tour";
+import toast from "react-hot-toast"; 
 
 interface Props {
   tour: Tour;
   onView: (id: string) => void;
   onWishlist?: (id: string) => void;
-  isWishlisted?: boolean; // whether this tour is in wishlist
+  isWishlisted?: boolean; 
   small?: boolean;
-  onCardClick?: (id: string) => void; // optional parent click
+  onCardClick?: (id: string) => void;
 }
 
 const UserTourCard: React.FC<Props> = ({
@@ -38,7 +39,17 @@ const UserTourCard: React.FC<Props> = ({
   // Wishlist toggle handler
   const handleWishlistClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (onWishlist) onWishlist(tour._id);
+
+    if (onWishlist) {
+      onWishlist(tour._id);
+
+      //  TOAST ADDED (no logic change)
+      if (isWishlisted) {
+        toast.success("Removed from wishlist ");
+      } else {
+        toast.success("Added to wishlist ");
+      }
+    }
   };
 
   return (
@@ -63,13 +74,17 @@ const UserTourCard: React.FC<Props> = ({
         ) : (
           <div className="w-full h-full bg-gradient-to-br from-blue-50 to-green-50 flex flex-col items-center justify-center">
             <FiMapPin className="text-gray-400 mb-2" size={small ? 32 : 48} />
-            <p className={`text-gray-500 font-medium ${small ? "text-sm" : "text-base"}`}>
+            <p
+              className={`text-gray-500 font-medium ${
+                small ? "text-sm" : "text-base"
+              }`}
+            >
               Tour Image
             </p>
           </div>
         )}
 
-        {/* ❤️ WISHLIST ICON */}
+        {/*  WISHLIST ICON */}
         {onWishlist && (
           <button
             aria-label="Toggle Wishlist"
@@ -78,20 +93,37 @@ const UserTourCard: React.FC<Props> = ({
           >
             <FiHeart
               size={small ? 14 : 18}
-              className={isWishlisted ? "text-red-600 fill-red-600" : "text-gray-600"}
+              className={
+                isWishlisted
+                  ? "text-red-600 fill-red-600"
+                  : "text-gray-600"
+              }
             />
           </button>
         )}
 
-        {/* 💰 PRICE */}
+        {/*  PRICE */}
         <div className="absolute top-2 right-2 bg-white/95 backdrop-blur-sm px-3 py-1.5 rounded-xl shadow-lg flex flex-col items-end">
           <div className="flex items-center gap-1">
-            <FiDollarSign className="text-green-600" size={small ? 12 : 16} />
-            <span className={`font-bold text-gray-900 ${small ? "text-sm" : "text-lg"}`}>
+            <FiDollarSign
+              className="text-green-600"
+              size={small ? 12 : 16}
+            />
+            <span
+              className={`font-bold text-gray-900 ${
+                small ? "text-sm" : "text-lg"
+              }`}
+            >
               {tour.price}
             </span>
           </div>
-          <span className={`text-gray-500 ${small ? "text-xs" : "text-sm"}`}>per person</span>
+          <span
+            className={`text-gray-500 ${
+              small ? "text-xs" : "text-sm"
+            }`}
+          >
+            per person
+          </span>
         </div>
 
         {/* 📅 DURATION */}
@@ -105,18 +137,29 @@ const UserTourCard: React.FC<Props> = ({
       <div className={`${small ? "p-4 text-sm" : "p-6"}`}>
         {/* TITLE + LOCATION */}
         <div className="mb-2">
-          <h3 className={`font-bold text-gray-900 line-clamp-1 ${small ? "text-sm" : "text-xl"}`}>
+          <h3
+            className={`font-bold text-gray-900 line-clamp-1 ${
+              small ? "text-sm" : "text-xl"
+            }`}
+          >
             {tour.title}
           </h3>
           <div className="flex items-center gap-1 text-gray-600">
-            <FiMapPin size={small ? 12 : 16} className="text-green-600 flex-shrink-0" />
+            <FiMapPin
+              size={small ? 12 : 16}
+              className="text-green-600 flex-shrink-0"
+            />
             <span className="truncate">{tour.location}</span>
           </div>
         </div>
 
         {/* DESCRIPTION */}
         {tour.description && (
-          <p className={`text-gray-600 line-clamp-2 ${small ? "text-xs mb-2" : "text-sm mb-5"}`}>
+          <p
+            className={`text-gray-600 line-clamp-2 ${
+              small ? "text-xs mb-2" : "text-sm mb-5"
+            }`}
+          >
             {tour.description}
           </p>
         )}
@@ -125,13 +168,20 @@ const UserTourCard: React.FC<Props> = ({
         <div className="flex justify-between items-center mb-3">
           {tour.maxGroupSize && (
             <div className="flex items-center gap-2 text-sm">
-              <FiUsers className="text-blue-600" size={small ? 14 : 18} />
-              <span className="text-gray-900 font-semibold">{tour.maxGroupSize} Travelers</span>
+              <FiUsers
+                className="text-blue-600"
+                size={small ? 14 : 18}
+              />
+              <span className="text-gray-900 font-semibold">
+                {tour.maxGroupSize} Travelers
+              </span>
             </div>
           )}
           <span
             className={`text-xs px-2 py-1 rounded-full ${
-              isActive ? "bg-green-100 text-green-700" : "bg-yellow-100 text-yellow-700"
+              isActive
+                ? "bg-green-100 text-green-700"
+                : "bg-yellow-100 text-yellow-700"
             }`}
           >
             {isActive ? "Active" : "Pending"}
@@ -154,9 +204,16 @@ const UserTourCard: React.FC<Props> = ({
             <button
               onClick={handleWishlistClick}
               className={`flex-1 font-medium py-1.5 rounded-lg transition text-xs flex items-center justify-center gap-1
-                ${isWishlisted ? "bg-red-100 text-red-700" : "bg-red-50 hover:bg-red-100 text-red-700"}`}
+                ${
+                  isWishlisted
+                    ? "bg-red-100 text-red-700"
+                    : "bg-red-50 hover:bg-red-100 text-red-700"
+                }`}
             >
-              <FiHeart size={12} className={isWishlisted ? "fill-red-600" : ""} />
+              <FiHeart
+                size={12}
+                className={isWishlisted ? "fill-red-600" : ""}
+              />
               {isWishlisted ? "Saved" : "Wishlist"}
             </button>
           )}

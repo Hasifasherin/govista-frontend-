@@ -1,10 +1,13 @@
-import axios, { AxiosRequestConfig } from "axios";
+import axios, { AxiosRequestConfig, AxiosError } from "axios";
 import { ApiResponse } from "../types";
 
 /* ================== Axios Instance ================== */
 const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
-  timeout: 180_000, // 3 minutes
+  timeout: 300_000, // 5 minutes (safe for payments)
+  headers: {
+    "Content-Type": "application/json",
+  },
 });
 
 /* ================== Request Interceptor ================== */
@@ -14,6 +17,7 @@ api.interceptors.request.use(
       const token = localStorage.getItem("token");
       const adminToken = localStorage.getItem("adminToken");
       const authToken = adminToken || token;
+
       if (authToken && config.headers) {
         config.headers.Authorization = `Bearer ${authToken}`;
       }
@@ -26,7 +30,7 @@ api.interceptors.request.use(
 /* ================== Response Interceptor ================== */
 api.interceptors.response.use(
   (response) => response,
-  (error) => {
+  (error: AxiosError) => {
     if (typeof window !== "undefined" && error.response?.status === 401) {
       localStorage.removeItem("token");
       localStorage.removeItem("adminToken");
@@ -51,21 +55,39 @@ export const apiRequest = async <T = any>(
       ...config,
     });
 
-    if (!response?.data) {
+    if (!response || response.data === undefined) {
       throw new Error(`No data returned from API: ${method} ${url}`);
     }
 
     return response.data as T;
   } catch (error: any) {
-    if (!error.response) {
+    const axiosError = error as AxiosError;
+
+    if (!axiosError.response) {
       console.error(`Network/CORS error on ${method} ${url}`, error);
     } else {
+      const responseData = axiosError.response.data as
+        | { message?: string; error?: string }
+        | undefined;
+
       console.error(
         `API Error (${method} ${url}):`,
-        error.response.data || error.message
+        responseData?.message ||
+          responseData?.error ||
+          axiosError.message ||
+          error
       );
     }
-    throw error;
+
+    const safeMessage =
+      (axiosError.response?.data as { message?: string; error?: string })
+        ?.message ||
+      (axiosError.response?.data as { message?: string; error?: string })
+        ?.error ||
+      axiosError.message ||
+      "API request failed";
+
+    throw new Error(safeMessage);
   }
 };
 
