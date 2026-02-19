@@ -14,7 +14,7 @@ const ToursContent = () => {
   const date = searchParams.get("date") ?? "";
 
   const [tours, setTours] = useState<Tour[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -54,7 +54,7 @@ const ToursContent = () => {
         } else {
           setTours([]);
         }
-      } catch (err) {
+      } catch {
         setError("Something went wrong while loading tours.");
         setTours([]);
       } finally {
@@ -73,10 +73,10 @@ const ToursContent = () => {
     <div className="max-w-6xl mx-auto py-10 px-4">
       <h1 className="text-2xl font-bold mb-6">Available Tours</h1>
 
-      {loading && <p className="text-gray-500">Loading tours...</p>}
+      {loading && <p>Loading tours...</p>}
       {error && <p className="text-red-500">{error}</p>}
       {!loading && !error && tours.length === 0 && (
-        <p className="text-gray-500">No tours found.</p>
+        <p>No tours found.</p>
       )}
 
       <div className="grid md:grid-cols-3 gap-6">
@@ -86,7 +86,7 @@ const ToursContent = () => {
             tour={tour}
             onView={handleNavigate}
             onCardClick={handleNavigate}
-            onWishlist={(id) => console.log("Wishlist:", id)}
+            onWishlist={(id) => console.log(id)}
             isWishlisted={false}
           />
         ))}

@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 
 export default function ToursPage() {
   return (
-    <Suspense fallback={<p className="p-10">Loading tours...</p>}>
+    <Suspense fallback={<div className="p-10">Loading tours...</div>}>
       <ToursContent />
     </Suspense>
   );
